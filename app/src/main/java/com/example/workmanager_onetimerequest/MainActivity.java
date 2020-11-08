@@ -2,6 +2,8 @@ package com.example.workmanager_onetimerequest;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
@@ -20,7 +22,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(Myworker.class).build();
+        Constraints constraints=new Constraints.Builder().setRequiredNetworkType(NetworkType.UNMETERED)
+                .build();
+        OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(Myworker.class).setConstraints(constraints).build();
 
         button = findViewById(R.id.onetimerequest);
         textView = findViewById(R.id.textview);
@@ -28,9 +32,10 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WorkManager.getInstance().enqueue(request);
+                WorkManager.getInstance(MainActivity.this).enqueue(request);
             }
         });
+
 
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(request.getId())
                 .observe(this, new Observer<WorkInfo>() {
